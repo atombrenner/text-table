@@ -20,6 +20,8 @@ export type Column = {
   fixedWidth?: number
 }
 
+export type ColumnOrTitle = Column | string | undefined
+
 export const stringLeft = (title: string) => ({
   title,
   format: formatAny,
@@ -45,34 +47,38 @@ export const number = (title: string, decimalPlaces = 2) => ({
   maxWidth: Number.POSITIVE_INFINITY,
 })
 
-// export const configure = () => {
-//   const padding = ' '
-//   return textTable
-// }
-
-export const normalizeColumns = (
-  columnsOrTitles: (string | Column)[],
-  firstRow: unknown[]
+export const makeColumns = (
+  columnsOrTitles: ColumnOrTitle[] | undefined,
+  firstRow: unknown[] | undefined
 ): Column[] => {
-  const normalized = [...columnsOrTitles]
-  while (normalized.length < firstRow.length) normalized.push('')
-  return normalized.map((columnOrTitle, columnIndex) =>
-    typeof columnOrTitle === 'string'
-      ? typeof firstRow[columnIndex] === 'number'
-        ? number(columnOrTitle)
-        : string(columnOrTitle)
-      : columnOrTitle
-  )
+  if (!firstRow) {
+    if (!columnsOrTitles) return []
+    firstRow = Array.from(columnsOrTitles).fill('')
+  }
+  const columns = columnsOrTitles ? [...columnsOrTitles] : Array.from(firstRow).fill('')
+  // null/undefined should behave like holes in the array
+  // can't use map to create "holes", so we need to mutate the array
+  for (let i = 0; i < columns.length; i += 1) {
+    const item = columns[i]
+    // use loose equality == here to check if item is null or undefined
+    if (item == null) {
+      delete columns[i] // punch a hole in the array
+    } else if (typeof item === 'string') {
+      columns[i] = typeof firstRow[i] === 'number' ? number(item) : string(item)
+    }
+  }
+  columns.length = firstRow.length
+  return columns as Column[]
 }
 
 const formatData = (data: unknown[][], columns: Column[]): string[][] =>
-  data.map((row) => row.map((cell, column) => columns[column].format(cell)))
+  data.map((row) => columns.map(({ format }, i) => format(row[i])))
 
 const alignData = (data: string[][], columns: Column[], columnWidths: number[]): string[][] =>
-  data.map((row) => row.map((v, c) => columns[c].align(v, columnWidths[c])))
+  data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
 
 const alignHeader = (columns: Column[], columnWidths: number[]): string[] =>
-  columns.map(({ title, titleAlign }, columnIndex) => titleAlign(title, columnWidths[columnIndex]))
+  columns.map(({ title, titleAlign }, i) => titleAlign(title, columnWidths[i]))
 
 const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
   columns.map((column: Column, columnIndex: number) =>
@@ -86,8 +92,9 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
     )
   )
 
-export const textTable = (data: unknown[][], columnsOrTitles?: (string | Column)[]): string => {
-  const columns = normalizeColumns(columnsOrTitles ?? [], data[0] ?? [])
+// expected future overloads (data, columns, options)
+export const textTable = (data: unknown[][], columnsOrTitles?: ColumnOrTitle[]): string => {
+  const columns = makeColumns(columnsOrTitles, data[0])
   const formattedData = formatData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = alignData(formattedData, columns, columnWidths)
@@ -95,11 +102,26 @@ export const textTable = (data: unknown[][], columnsOrTitles?: (string | Column)
   // add header only if columnsOrTitles is defined
   const header = columnsOrTitles
     ? [
-        alignHeader(columns, columnWidths).join(' | '),
-        columnWidths.map((w) => '-'.repeat(w + 1)).join('|'),
+        alignHeader(columns, columnWidths).flat().join(' | '),
+        columnWidths
+          .flat()
+          .map((w) => '-'.repeat(w))
+          .join('-|-'),
       ]
     : []
 
   // apply padding lines
-  return [...header, ...alignedData.map((row) => row.join(' | '))].join('\n') + '\n'
+
+  // return [...header, ...alignedData.map((row) => row.join(' | '))].join('\n') + '\n'
+  return (
+    [
+      ...header,
+      ...alignedData.map((row) =>
+        columns
+          .map((_, i) => row[i])
+          .flat()
+          .join(' | ')
+      ),
+    ].join('\n') + '\n'
+  )
 }

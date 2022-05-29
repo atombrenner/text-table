@@ -16,9 +16,9 @@ const data = [
 ]
 
 console.log(textTable(data))
-// Apples     │ 37.50
-// Bananas    │  4.25
-// Tangerines │ 58.25
+// Apples     │ 37.50 | 33.13
+// Bananas    │  4.25 |  4.09
+// Tangerines │ 58.25 | 45.34
 
 console.log(textTable(data, ['Fruits', 'Percentage']))
 // Fruits     │ Percentage
@@ -33,6 +33,23 @@ console.log(textTable(data, [left('Fruits'), number(Percentage, 3)]))
 //     Apples │     37.500
 //    Bananas │      4.246
 // Tangerines │     58.254
+
+const data3 = [
+  ['Apples', 37.5, 33.13],
+  ['Bananas', 4.246, 4.09],
+  ['Tangerines', 58.254, 45.34],
+]
+
+console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], [stringRight('Sum'), 100, 34.03]))
+// Fruits     |    Max |   Avg
+// -----------|--------|------
+// Apples     │  37.50 | 33.13
+// Bananas    │   4.25 |  4.09
+// Tangerines │  58.25 | 45.34
+// -----------|--------|------
+//        Sum | 100.00 | 34.03
+
+// NOTE: header and footer are just formatted data. We only need to know if we want to display separator
 ```
 
 ```typescript
@@ -47,6 +64,28 @@ const data = [
 const textTable = configure(theme, padding, columns)
 ```
 
+## Max Themed Border
+
+```typescript
+// /-----------------------------\
+// | Fruits     |    Max |   Avg |
+// |------------|--------|-------|
+// | Apples     │  37.50 | 33.13 |
+// | Bananas    │   4.24 |  4.09 |
+// | Tangerines │  58.25 | 45.34 |
+// |------------|--------|-------|
+// | Sum        | 100.00 | 34.03 |
+// \-----------------------------/
+```
+
+Border
+
+- hline
+- vline
+- cross
+- edgeTopLeft, TopRight, bottomRight, bottomLeft
+
 ## TODO
 
+- we never need padding, only an option for border (horizontal, vertical)
 - allow ansi colors, count weird unicode symbols correctly

@@ -1,11 +1,14 @@
 import { textTable } from './textTable'
 
-const firstSpace = /\n */
+const firstSpace = /\n */g
 const trim: typeof String.raw = (...args) => {
-  let s = String.raw(...args)
+  let s = String.raw(...args).trimEnd()
   const match = s.match(firstSpace)
-  if (match) s = s.replaceAll(match[0], '\n')
-  return s.trim() + '\n'
+  if (match) {
+    const minMatch = match.reduce((min, s) => (s.length < min.length ? s : min), match[0])
+    s = s.replaceAll(minMatch, '\n')
+  }
+  return s.substring(1) + '\n'
 }
 
 describe('textTable', () => {
@@ -39,6 +42,49 @@ describe('textTable', () => {
       Apples     |      37.50
       Bananas    |       4.25
       Tangerines |      58.25
+    `)
+  })
+
+  const data3 = [
+    ['Apples', 37.5, 33.13],
+    ['Bananas', 4.246, 4.09],
+    ['Tangerines', 58.254, 45.34],
+  ]
+
+  it('should only print header if data table is empty', () => {
+    expect(textTable([], ['Fruits', 'Max', 'Avg'])).toEqual(trim`
+      Fruits | Max | Avg
+      -------|-----|----                        
+    `)
+  })
+
+  it('should format three columns', () => {
+    expect(textTable(data3, ['Fruits', 'Max', 'Avg'])).toEqual(trim`
+      Fruits     |   Max |   Avg
+      -----------|-------|------
+      Apples     | 37.50 | 33.13
+      Bananas    |  4.25 |  4.09
+      Tangerines | 58.25 | 45.34
+    `)
+  })
+
+  it('should omit first column ', () => {
+    expect(textTable(data3, [, 'Max', 'Avg'])).toEqual(trim`
+        Max |   Avg
+      ------|------
+      37.50 | 33.13
+       4.25 |  4.09
+      58.25 | 45.34
+    `)
+  })
+
+  it('should omit column header', () => {
+    expect(textTable(data3, ['Fruits', 'Max'])).toEqual(trim`
+      Fruits     |   Max
+      -----------|------
+      Apples     | 37.50
+      Bananas    |  4.25
+      Tangerines | 58.25
     `)
   })
 })
