@@ -1,6 +1,6 @@
 # @atombrenner/text-table
 
-format data arrays as text tables for display in monospaced fonts
+format data arrays as text tables for display with monospaced fonts
 
 also simple number formatting
 

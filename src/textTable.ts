@@ -102,9 +102,10 @@ export const textTable = (data: unknown[][], columnsOrTitles?: ColumnOrTitle[]):
   // add header only if columnsOrTitles is defined
   const header = columnsOrTitles
     ? [
+        // TODO: remove flats here
         alignHeader(columns, columnWidths).flat().join(' | '),
         columnWidths
-          .flat()
+          .flat() // remove flat
           .map((w) => '-'.repeat(w))
           .join('-|-'),
       ]
@@ -119,7 +120,7 @@ export const textTable = (data: unknown[][], columnsOrTitles?: ColumnOrTitle[]):
       ...alignedData.map((row) =>
         columns
           .map((_, i) => row[i])
-          .flat()
+          .flat() // TODO super ugly and possible inefficient
           .join(' | ')
       ),
     ].join('\n') + '\n'
