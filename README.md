@@ -66,16 +66,17 @@ const textTable = configure(theme, padding, columns)
 
 ## Max Themed Border
 
-```typescript
+```
 // /-----------------------------\
 // | Fruits     |    Max |   Avg |
-// |------------|--------|-------|
+// |------------+--------+-------|
 // | Apples     │  37.50 | 33.13 |
 // | Bananas    │   4.24 |  4.09 |
 // | Tangerines │  58.25 | 45.34 |
-// |------------|--------|-------|
+// |------------+--------+-------|
 // | Sum        | 100.00 | 34.03 |
 // \-----------------------------/
+// theme:
 ```
 
 Border
@@ -85,7 +86,12 @@ Border
 - cross
 - edgeTopLeft, TopRight, bottomRight, bottomLeft
 
+Templates
+'-|'
+'-|+'
+'-|+╠╣╔╗╝╚╩╦'
+
 ## TODO
 
-- we never need padding, only an option for border (horizontal, vertical)
+- we never need padding, only an option for enabling a border around the table (horizontal, vertical)
 - allow ansi colors, count weird unicode symbols correctly

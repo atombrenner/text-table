@@ -2,6 +2,7 @@
   "extends": "@tsconfig/node16",
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+    "noEmit": true,
 
     /* Type Checking */
     "strict": true /* Enable all strict type-checking options. */

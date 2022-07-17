@@ -12,7 +12,8 @@ export const alignLeft = (s: string, width: number) => s.padEnd(width)
 export const alignRight = (s: string, width: number) => s.padStart(width)
 
 export type Column = {
-  title: string
+  title: string // header ?
+  // footer?: string
   titleAlign: AlignFn
   format: FormatFn
   align: AlignFn
@@ -20,7 +21,7 @@ export type Column = {
   fixedWidth?: number
 }
 
-export type ColumnOrTitle = Column | string | undefined
+export type TitleOrColumn = string | Column | undefined
 
 export const stringLeft = (title: string) => ({
   title,
@@ -48,27 +49,22 @@ export const number = (title: string, decimalPlaces = 2) => ({
 })
 
 export const makeColumns = (
-  columnsOrTitles: ColumnOrTitle[] | undefined,
+  titlesOrColumns: TitleOrColumn[] | undefined,
   firstRow: unknown[] | undefined
 ): Column[] => {
+  if (!titlesOrColumns) {
+    titlesOrColumns = firstRow ? Array<string>(firstRow.length).fill('') : []
+  }
   if (!firstRow) {
-    if (!columnsOrTitles) return []
-    firstRow = Array.from(columnsOrTitles).fill('')
+    firstRow = Array<unknown>(titlesOrColumns.length).fill('')
   }
-  const columns = columnsOrTitles ? [...columnsOrTitles] : Array.from(firstRow).fill('')
-  // null/undefined should behave like holes in the array
-  // can't use map to create "holes", so we need to mutate the array
-  for (let i = 0; i < columns.length; i += 1) {
-    const item = columns[i]
-    // use loose equality == here to check if item is null or undefined
-    if (item == null) {
-      delete columns[i] // punch a hole in the array
-    } else if (typeof item === 'string') {
-      columns[i] = typeof firstRow[i] === 'number' ? number(item) : string(item)
-    }
-  }
-  columns.length = firstRow.length
-  return columns as Column[]
+
+  return titlesOrColumns.map((titleOrColumn, i) => {
+    if (typeof titleOrColumn === 'object') return titleOrColumn
+    const title = titleOrColumn ?? ''
+    // @ts-expect-error -- seems to be a typescript bug because firstRow is always defined at this point
+    return typeof firstRow[i] === 'number' ? number(title) : string(title)
+  })
 }
 
 const formatData = (data: unknown[][], columns: Column[]): string[][] =>
@@ -93,14 +89,17 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
   )
 
 // expected future overloads (data, columns, options)
-export const textTable = (data: unknown[][], columnsOrTitles?: ColumnOrTitle[]): string => {
-  const columns = makeColumns(columnsOrTitles, data[0])
+// textTable(data, header, footer, theme)
+// textTable(data, [number('header', 4, 4)])
+// textTable(data, options {header, footer, horizontalBorder, verticalBorder, theme})
+export const textTable = (data: unknown[][], titlesOrColumns?: TitleOrColumn[]): string => {
+  const columns = makeColumns(titlesOrColumns, data[0])
   const formattedData = formatData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = alignData(formattedData, columns, columnWidths)
 
-  // add header only if columnsOrTitles is defined
-  const header = columnsOrTitles
+  // add header only if titlesOrColumns is defined
+  const header = titlesOrColumns
     ? [
         // TODO: remove flats here
         alignHeader(columns, columnWidths).flat().join(' | '),
@@ -113,16 +112,5 @@ export const textTable = (data: unknown[][], columnsOrTitles?: ColumnOrTitle[]):
 
   // apply padding lines
 
-  // return [...header, ...alignedData.map((row) => row.join(' | '))].join('\n') + '\n'
-  return (
-    [
-      ...header,
-      ...alignedData.map((row) =>
-        columns
-          .map((_, i) => row[i])
-          .flat() // TODO super ugly and possible inefficient
-          .join(' | ')
-      ),
-    ].join('\n') + '\n'
-  )
+  return [...header, ...alignedData.map((row) => row.flat().join(' | '))].join('\n') + '\n'
 }

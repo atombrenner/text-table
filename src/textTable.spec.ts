@@ -28,7 +28,8 @@ describe('textTable', () => {
   ]
 
   it('should format without header', () => {
-    expect(textTable(data)).toEqual(trim`
+    const text = textTable(data)
+    expect(text).toEqual(trim`
       Apples     | 37.50
       Bananas    |  4.25
       Tangerines | 58.25
@@ -36,7 +37,8 @@ describe('textTable', () => {
   })
 
   it('should format with header', () => {
-    expect(textTable(data, ['Fruits', 'Percentage'])).toEqual(trim`
+    const text = textTable(data, ['Fruits', 'Percentage'])
+    expect(text).toEqual(trim`
       Fruits     | Percentage
       -----------|-----------
       Apples     |      37.50
@@ -51,15 +53,17 @@ describe('textTable', () => {
     ['Tangerines', 58.254, 45.34],
   ]
 
-  it('should only print header if data table is empty', () => {
-    expect(textTable([], ['Fruits', 'Max', 'Avg'])).toEqual(trim`
+  it('should print header only if data is empty', () => {
+    const text = textTable([], ['Fruits', 'Max', 'Avg'])
+    expect(text).toEqual(trim`
       Fruits | Max | Avg
       -------|-----|----                        
     `)
   })
 
   it('should format three columns', () => {
-    expect(textTable(data3, ['Fruits', 'Max', 'Avg'])).toEqual(trim`
+    const text = textTable(data3, ['Fruits', 'Max', 'Avg'])
+    expect(text).toEqual(trim`
       Fruits     |   Max |   Avg
       -----------|-------|------
       Apples     | 37.50 | 33.13
@@ -69,7 +73,8 @@ describe('textTable', () => {
   })
 
   it('should omit first column ', () => {
-    expect(textTable(data3, [, 'Max', 'Avg'])).toEqual(trim`
+    const text = textTable(data3, [, 'Max', 'Avg'])
+    expect(text).toEqual(trim`
         Max |   Avg
       ------|------
       37.50 | 33.13
@@ -78,8 +83,20 @@ describe('textTable', () => {
     `)
   })
 
-  it('should omit column header', () => {
-    expect(textTable(data3, ['Fruits', 'Max'])).toEqual(trim`
+  it('should omit second column ', () => {
+    const text = textTable(data3, ['Fruits', , 'Avg'])
+    expect(text).toEqual(trim`
+      Fruits     |   Avg
+      -----------|------
+      Apples     | 33.13
+      Bananas    |  4.09
+      Tangerines | 45.34
+    `)
+  })
+
+  it('should omit last column', () => {
+    const text = textTable(data3, ['Fruits', 'Max'])
+    expect(text).toEqual(trim`
       Fruits     |   Max
       -----------|------
       Apples     | 37.50
