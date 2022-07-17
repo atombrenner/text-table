@@ -12,8 +12,7 @@ export const alignLeft = (s: string, width: number) => s.padEnd(width)
 export const alignRight = (s: string, width: number) => s.padStart(width)
 
 export type Column = {
-  title: string // header ?
-  // footer?: string
+  title: string
   titleAlign: AlignFn
   format: FormatFn
   align: AlignFn
@@ -88,29 +87,42 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
     )
   )
 
-// expected future overloads (data, columns, options)
-// textTable(data, header, footer, theme)
-// textTable(data, [number('header', 4, 4)])
-// textTable(data, options {header, footer, horizontalBorder, verticalBorder, theme})
-export const textTable = (data: unknown[][], titlesOrColumns?: TitleOrColumn[]): string => {
+type Options = Partial<{
+  theme: string
+  footer: boolean
+}>
+
+export const textTable = (
+  data: unknown[][],
+  titlesOrColumns?: TitleOrColumn[],
+  options: Options = {}
+): string => {
   const columns = makeColumns(titlesOrColumns, data[0])
   const formattedData = formatData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = alignData(formattedData, columns, columnWidths)
 
+  const bordered = (s: string) => string
+
   // add header only if titlesOrColumns is defined
   const header = titlesOrColumns
     ? [
-        // TODO: remove flats here
         alignHeader(columns, columnWidths).flat().join(' | '),
-        columnWidths
-          .flat() // remove flat
-          .map((w) => '-'.repeat(w))
-          .join('-|-'),
+        columnWidths.flatMap((w) => '-'.repeat(w)).join('-|-'),
       ]
     : []
 
-  // apply padding lines
+  const footer = options.footer
+    ? [columnWidths.flatMap((w) => '-'.repeat(w)).join('-|-'), alignedData.pop()]
+    : []
 
-  return [...header, ...alignedData.map((row) => row.flat().join(' | '))].join('\n') + '\n'
+  return (
+    [
+      // border
+      ...header,
+      ...alignedData.map((row) => row.flat().join(' | ')),
+      ...footer,
+      // border
+    ].join('\n') + '\n'
+  )
 }

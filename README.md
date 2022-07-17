@@ -84,6 +84,7 @@ Border
 - hline
 - vline
 - cross
+
 - edgeTopLeft, TopRight, bottomRight, bottomLeft
 
 Templates
