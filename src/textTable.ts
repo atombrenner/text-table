@@ -90,7 +90,35 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
 type Options = Partial<{
   theme: string
   footer: boolean
+  border: boolean /*| Partial<{ top: boolean; right: boolean; bottom: boolean; left: boolean }>*/
+  /* calculateWidth: (s: string) => number */
 }>
+
+type BorderChars = {
+  left: string
+  line: string
+  join: string
+  right: string
+}
+
+const getBorderChars = (theme: string, left: number, join: number, right: number) => ({
+  left: theme[left] ?? theme[1],
+  line: theme[0],
+  right: theme[right] ?? theme[1],
+  join: theme[join] ?? theme[1],
+})
+
+const makeSeparator = (
+  widths: number[],
+  { left, line, join: cross, right }: BorderChars,
+  border = false
+) => {
+  const row = widths.flatMap((w) => line.repeat(w)).join(line + cross + line)
+  return border ? left + line + row + line + right : row
+}
+
+//const theme = '═║╬╠╣╔╦╗╚╩╝'
+const theme = '-|'
 
 export const textTable = (
   data: unknown[][],
@@ -101,28 +129,38 @@ export const textTable = (
   const formattedData = formatData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = alignData(formattedData, columns, columnWidths)
+  const alignedHeaders = alignHeader(columns, columnWidths)
 
-  const bordered = (s: string) => string
+  const bordered = options.border
+    ? (c: string) => theme[1] + ' ' + c + ' ' + theme[1]
+    : (c: string) => c
 
-  // add header only if titlesOrColumns is defined
+  const topBorder = options.border
+    ? [makeSeparator(columnWidths, getBorderChars(theme, 5, 6, 7), options.border)]
+    : []
+
+  const bottomBorder = options.border
+    ? [makeSeparator(columnWidths, getBorderChars(theme, 8, 9, 10), options.border)]
+    : []
+
+  const separator = makeSeparator(columnWidths, getBorderChars(theme, 3, 2, 4), options.border)
+
+  const innerVerticalLine = ' ' + theme[1] + ' '
+
   const header = titlesOrColumns
-    ? [
-        alignHeader(columns, columnWidths).flat().join(' | '),
-        columnWidths.flatMap((w) => '-'.repeat(w)).join('-|-'),
-      ]
+    ? [bordered(alignedHeaders.flat().join(innerVerticalLine)), separator]
     : []
 
-  const footer = options.footer
-    ? [columnWidths.flatMap((w) => '-'.repeat(w)).join('-|-'), alignedData.pop()]
-    : []
+  const footerRow = options.footer && alignedData.pop()
+  const footer = footerRow ? [separator, bordered(footerRow.flat().join(innerVerticalLine))] : []
 
   return (
     [
-      // border
+      ...topBorder,
       ...header,
-      ...alignedData.map((row) => row.flat().join(' | ')),
+      ...alignedData.map((row) => bordered(row.flat().join(innerVerticalLine))),
       ...footer,
-      // border
+      ...bottomBorder,
     ].join('\n') + '\n'
   )
 }

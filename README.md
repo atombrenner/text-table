@@ -36,20 +36,19 @@ console.log(textTable(data, [left('Fruits'), number(Percentage, 3)]))
 
 const data3 = [
   ['Apples', 37.5, 33.13],
-  ['Bananas', 4.246, 4.09],
+  ['Bananas', 4.246, 4.09001],
   ['Tangerines', 58.254, 45.34],
+  ['Sum', 100, 34.030001]
 ]
 
-console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], [stringRight('Sum'), 100, 34.03]))
+console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], {footer: true})
 // Fruits     |    Max |   Avg
 // -----------|--------|------
 // Apples     │  37.50 | 33.13
 // Bananas    │   4.25 |  4.09
 // Tangerines │  58.25 | 45.34
 // -----------|--------|------
-//        Sum | 100.00 | 34.03
-
-// NOTE: header and footer are just formatted data. We only need to know if we want to display separator
+// Sum        | 100.00 | 34.03
 ```
 
 ```typescript
@@ -79,18 +78,12 @@ const textTable = configure(theme, padding, columns)
 // theme:
 ```
 
-Border
-
-- hline
-- vline
-- cross
-
-- edgeTopLeft, TopRight, bottomRight, bottomLeft
-
 Templates
 '-|'
 '-|+'
-'-|+╠╣╔╗╝╚╩╦'
+'-|╬╠╣╔╗╝╚╩╦'
+
+see https://en.wikipedia.org/wiki/Box-drawing_character
 
 ## TODO
 
