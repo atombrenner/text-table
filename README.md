@@ -1,8 +1,22 @@
 # @atombrenner/text-table
 
-format data arrays as text tables for display with monospaced fonts
+Create text tables for display with monospaced fonts from data arrays with sensible defaults:
 
-also simple number formatting
+- minimal bordering
+- autodetect column type (string or number)
+- right align number columns
+- optional header with column names
+
+For more advanced use cases you can
+
+- provide your own formatting function per column
+- specify a max or fixed width per column
+- specify alignment per column
+- display a footer
+- add borders
+- provide your own bordering theme
+
+This package has zero dependencies.
 
 ## Usage
 
@@ -16,23 +30,23 @@ const data = [
 ]
 
 console.log(textTable(data))
-// Apples     │ 37.50 | 33.13
-// Bananas    │  4.25 |  4.09
-// Tangerines │ 58.25 | 45.34
+// Apples     | 37.50 | 33.13
+// Bananas    |  4.25 |  4.09
+// Tangerines | 58.25 | 45.34
 
 console.log(textTable(data, ['Fruits', 'Percentage']))
-// Fruits     │ Percentage
-// ───────────┼───────────
-// Apples     │      37.50
-// Bananas    │       4.25
-// Tangerines │      58.25
+// Fruits     | Percentage
+// -----------|-----------
+// Apples     |      37.50
+// Bananas    |       4.25
+// Tangerines |      58.25
 
 console.log(textTable(data, [left('Fruits'), number(Percentage, 3)]))
-//     Fruits │ Percentage
-// ───────────┼───────────
-//     Apples │     37.500
-//    Bananas │      4.246
-// Tangerines │     58.254
+//     Fruits | Percentage
+// -----------|-----------
+//     Apples |     37.500
+//    Bananas |      4.246
+// Tangerines |     58.254
 
 const data3 = [
   ['Apples', 37.5, 33.13],
@@ -41,12 +55,12 @@ const data3 = [
   ['Sum', 100, 34.030001]
 ]
 
-console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], {footer: true})
+console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], { footer: true })
 // Fruits     |    Max |   Avg
 // -----------|--------|------
-// Apples     │  37.50 | 33.13
-// Bananas    │   4.25 |  4.09
-// Tangerines │  58.25 | 45.34
+// Apples     |  37.50 | 33.13
+// Bananas    |   4.25 |  4.09
+// Tangerines |  58.25 | 45.34
 // -----------|--------|------
 // Sum        | 100.00 | 34.03
 ```
