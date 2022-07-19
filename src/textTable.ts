@@ -87,13 +87,6 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
     )
   )
 
-type Options = Partial<{
-  theme: string
-  footer: boolean
-  border: boolean /*| Partial<{ top: boolean; right: boolean; bottom: boolean; left: boolean }>*/
-  /* calculateWidth: (s: string) => number */
-}>
-
 type BorderChars = {
   left: string
   line: string
@@ -119,6 +112,14 @@ const makeSeparator = (
 
 //const theme = '═║╬╠╣╔╦╗╚╩╝'
 const theme = '-|'
+
+type Options = Partial<{
+  // header: boolean  // first row of data should be displayed in header
+  footer: boolean // last row of data should be displayed in footer
+  border: boolean // draw a border around the table
+  theme: string // a theme string for drawing borders, see README.md
+  // calculateWidth: (s: string) => number // if data contains ANSI color codes
+}>
 
 export const textTable = (
   data: unknown[][],

@@ -95,7 +95,7 @@ const textTable = configure(theme, padding, columns)
 Templates
 '-|'
 '-|+'
-'-|╬╠╣╔╗╝╚╩╦'
+'═║╬╠╣╔╦╗╚╩╝'
 
 see https://en.wikipedia.org/wiki/Box-drawing_character
 
