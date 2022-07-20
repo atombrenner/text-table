@@ -1,4 +1,4 @@
-import { textTable } from './textTable'
+import { textTable, lightLineTheme, heavyLineTheme, doubleLineTheme } from './textTable'
 
 const firstSpace = /\n */g
 const trim: typeof String.raw = (...args) => {
@@ -47,14 +47,16 @@ describe('textTable', () => {
     `)
   })
 
+  const header3 = ['Fruits', 'Max', 'Avg']
   const data3 = [
     ['Apples', 37.5, 33.13],
     ['Bananas', 4.246, 4.09],
     ['Tangerines', 58.254, 45.34],
   ]
+  const data3WithFooter = [...data3, ['Sum', 100, 34.030001]]
 
   it('should print header only if data is empty', () => {
-    const text = textTable([], ['Fruits', 'Max', 'Avg'])
+    const text = textTable([], header3)
     expect(text).toEqual(trim`
       Fruits | Max | Avg
       -------|-----|----                        
@@ -62,7 +64,7 @@ describe('textTable', () => {
   })
 
   it('should format three columns', () => {
-    const text = textTable(data3, ['Fruits', 'Max', 'Avg'])
+    const text = textTable(data3, header3)
     expect(text).toEqual(trim`
       Fruits     |   Max |   Avg
       -----------|-------|------
@@ -103,5 +105,90 @@ describe('textTable', () => {
       Bananas    |  4.25
       Tangerines | 58.25
     `)
+  })
+
+  it('should render a footer', () => {
+    const text = textTable(data3WithFooter, header3, { footer: true })
+    expect(text).toEqual(trim`
+      Fruits     |    Max |   Avg
+      -----------|--------|------
+      Apples     |  37.50 | 33.13
+      Bananas    |   4.25 |  4.09
+      Tangerines |  58.25 | 45.34
+      -----------|--------|------
+      Sum        | 100.00 | 34.03
+    `)
+  })
+
+  it('should render a border', () => {
+    const text = textTable(data3WithFooter, header3, { footer: true, border: true })
+    expect(text).toEqual(trim`
+      |------------|--------|-------|
+      | Fruits     |    Max |   Avg |
+      |------------|--------|-------|
+      | Apples     |  37.50 | 33.13 |
+      | Bananas    |   4.25 |  4.09 |
+      | Tangerines |  58.25 | 45.34 |
+      |------------|--------|-------|
+      | Sum        | 100.00 | 34.03 |
+      |------------|--------|-------|
+     `)
+  })
+
+  it('should render a lightLineTheme border', () => {
+    const text = textTable(data3WithFooter, header3, {
+      theme: lightLineTheme,
+      footer: true,
+      border: true,
+    })
+    expect(text).toEqual(trim`
+      ┌────────────┬────────┬───────┐
+      │ Fruits     │    Max │   Avg │
+      ├────────────┼────────┼───────┤
+      │ Apples     │  37.50 │ 33.13 │
+      │ Bananas    │   4.25 │  4.09 │
+      │ Tangerines │  58.25 │ 45.34 │
+      ├────────────┼────────┼───────┤
+      │ Sum        │ 100.00 │ 34.03 │
+      └────────────┴────────┴───────┘
+     `)
+  })
+
+  it('should render a heavyLineTheme border', () => {
+    const text = textTable(data3WithFooter, header3, {
+      theme: heavyLineTheme,
+      footer: true,
+      border: true,
+    })
+    expect(text).toEqual(trim`
+      ┏━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
+      ┃ Fruits     ┃    Max ┃   Avg ┃
+      ┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫
+      ┃ Apples     ┃  37.50 ┃ 33.13 ┃
+      ┃ Bananas    ┃   4.25 ┃  4.09 ┃
+      ┃ Tangerines ┃  58.25 ┃ 45.34 ┃
+      ┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫
+      ┃ Sum        ┃ 100.00 ┃ 34.03 ┃
+      ┗━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━┛
+     `)
+  })
+
+  it('should render a doubleLineTheme border', () => {
+    const text = textTable(data3WithFooter, header3, {
+      theme: doubleLineTheme,
+      footer: true,
+      border: true,
+    })
+    expect(text).toEqual(trim`
+      ╔════════════╦════════╦═══════╗
+      ║ Fruits     ║    Max ║   Avg ║
+      ╠════════════╬════════╬═══════╣
+      ║ Apples     ║  37.50 ║ 33.13 ║
+      ║ Bananas    ║   4.25 ║  4.09 ║
+      ║ Tangerines ║  58.25 ║ 45.34 ║
+      ╠════════════╬════════╬═══════╣
+      ║ Sum        ║ 100.00 ║ 34.03 ║
+      ╚════════════╩════════╩═══════╝
+     `)
   })
 })

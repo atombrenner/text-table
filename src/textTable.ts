@@ -110,8 +110,10 @@ const makeSeparator = (
   return border ? left + line + row + line + right : row
 }
 
-//const theme = '═║╬╠╣╔╦╗╚╩╝'
-const theme = '-|'
+export const minimalTheme = '-|'
+export const lightLineTheme = '─│┼├┤┌┬┐└┴┘'
+export const heavyLineTheme = '━┃╋┣┫┏┳┓┗┻┛'
+export const doubleLineTheme = '═║╬╠╣╔╦╗╚╩╝'
 
 type Options = Partial<{
   // header: boolean  // first row of data should be displayed in header
@@ -131,6 +133,8 @@ export const textTable = (
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = alignData(formattedData, columns, columnWidths)
   const alignedHeaders = alignHeader(columns, columnWidths)
+
+  const theme = options.theme ?? minimalTheme
 
   const bordered = options.border
     ? (c: string) => theme[1] + ' ' + c + ' ' + theme[1]

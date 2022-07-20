@@ -1,6 +1,6 @@
 // npx ts-node-dev --respawn -T example.ts
 
-import { textTable } from './src/textTable'
+import { textTable, doubleLineTheme, lightLineTheme, heavyLineTheme } from './src/textTable'
 
 const data = [
   ['Apples', 37.5, 33.13],
@@ -9,4 +9,9 @@ const data = [
   ['Sum', 100, 34.030001],
 ]
 
+console.log()
+console.log(textTable(data, ['Fruits', 'Max', 'Avg'], { footer: true }))
 console.log(textTable(data, ['Fruits', 'Max', 'Avg'], { footer: true, border: true }))
+console.log(
+  textTable(data, ['Fruits', 'Max', 'Avg'], { footer: true, border: false, theme: lightLineTheme })
+)
