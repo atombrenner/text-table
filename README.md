@@ -41,7 +41,7 @@ console.log(textTable(data, ['Fruits', 'Percentage']))
 // Bananas    |       4.25
 // Tangerines |      58.25
 
-console.log(textTable(data, [left('Fruits'), number(Percentage, 3)]))
+console.log(textTable(data, [stringLeft('Fruits'), number(Percentage, 3)]))
 //     Fruits | Percentage
 // -----------|-----------
 //     Apples |     37.500

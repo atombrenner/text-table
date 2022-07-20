@@ -16,7 +16,7 @@ export type Column = {
   titleAlign: AlignFn
   format: FormatFn
   align: AlignFn
-  maxWidth: number
+  maxWidth?: number
   fixedWidth?: number
 }
 
@@ -27,7 +27,6 @@ export const stringLeft = (title: string) => ({
   format: formatAny,
   align: alignLeft,
   titleAlign: alignLeft,
-  maxWidth: Number.POSITIVE_INFINITY,
 })
 export const string = stringLeft
 
@@ -36,7 +35,6 @@ export const stringRight = (title: string) => ({
   format: formatAny,
   align: alignRight,
   titleAlign: alignRight,
-  maxWidth: Number.POSITIVE_INFINITY,
 })
 
 export const number = (title: string, decimalPlaces = 2) => ({
@@ -44,7 +42,6 @@ export const number = (title: string, decimalPlaces = 2) => ({
   format: formatNumber(decimalPlaces),
   align: alignRight,
   titleAlign: alignRight,
-  maxWidth: Number.POSITIVE_INFINITY,
 })
 
 export const makeColumns = (
@@ -78,7 +75,7 @@ const alignHeader = (columns: Column[], columnWidths: number[]): string[] =>
 const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
   columns.map((column: Column, columnIndex: number) =>
     Math.min(
-      column.maxWidth,
+      column.maxWidth ?? Number.POSITIVE_INFINITY,
       column.fixedWidth ??
         data.reduce(
           (maxWidth, row) => Math.max(maxWidth, row[columnIndex].length),
