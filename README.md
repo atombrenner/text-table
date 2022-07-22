@@ -33,9 +33,9 @@ const data = [
 ]
 
 console.log(textTable(data))
-// Apples     | 37.50 | 33.13
-// Bananas    |  4.25 |  4.09
-// Tangerines | 58.25 | 45.34
+// Apples     | 37.50
+// Bananas    |  4.25
+// Tangerines | 58.25
 
 console.log(textTable(data, ['Fruits', 'Percentage']))
 // Fruits     | Percentage
@@ -102,7 +102,6 @@ Templates
 
 see https://en.wikipedia.org/wiki/Box-drawing_character
 
-## TODO
+## Gotchas
 
-- we never need padding, only an option for enabling a border around the table (horizontal, vertical)
-- allow ansi colors, count weird unicode symbols correctly
+- no support for ansi colors, can be solved by injecting a custom string length function that ignores zero length terminal codes

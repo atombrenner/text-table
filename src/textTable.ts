@@ -44,7 +44,7 @@ export const number = (title: string, decimalPlaces = 2) => ({
   titleAlign: alignRight,
 })
 
-export const makeColumns = (
+export const getColumns = (
   titlesOrColumns: TitleOrColumn[] | undefined,
   firstRow: unknown[] | undefined
 ): Column[] => {
@@ -63,13 +63,13 @@ export const makeColumns = (
   })
 }
 
-const formatData = (data: unknown[][], columns: Column[]): string[][] =>
+const getFormattedData = (data: unknown[][], columns: Column[]): string[][] =>
   data.map((row) => columns.map(({ format }, i) => format(row[i])))
 
-const alignData = (data: string[][], columns: Column[], columnWidths: number[]): string[][] =>
+const getAlignedData = (data: string[][], columns: Column[], columnWidths: number[]): string[][] =>
   data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
 
-const alignHeader = (columns: Column[], columnWidths: number[]): string[] =>
+const getAligndHeader = (columns: Column[], columnWidths: number[]): string[] =>
   columns.map(({ title, titleAlign }, i) => titleAlign(title, columnWidths[i]))
 
 const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
@@ -84,33 +84,22 @@ const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
     )
   )
 
-type BorderChars = {
-  left: string
-  line: string
-  join: string
-  right: string
+const separatorRow = ([line, join]: string[], widths: number[]) =>
+  widths.flatMap((w) => line.repeat(w)).join(line + join + line)
+
+const makeBordered = ([left, line, right]: string[]) => {
+  const leftBorder = left + line
+  const rightBorder = line + right
+  return (row: string) => leftBorder + row + rightBorder
 }
 
-const getBorderChars = (theme: string, left: number, join: number, right: number) => ({
-  left: theme[left] ?? theme[1],
-  line: theme[0],
-  right: theme[right] ?? theme[1],
-  join: theme[join] ?? theme[1],
-})
+const identity = <T>(x: T) => x
 
-const makeSeparator = (
-  widths: number[],
-  { left, line, join: cross, right }: BorderChars,
-  border = false
-) => {
-  const row = widths.flatMap((w) => line.repeat(w)).join(line + cross + line)
-  return border ? left + line + row + line + right : row
-}
-
-export const minimalTheme = '-|'
-export const lightLineTheme = '─│┼├┤┌┬┐└┴┘'
-export const heavyLineTheme = '━┃╋┣┫┏┳┓┗┻┛'
-export const doubleLineTheme = '═║╬╠╣╔╦╗╚╩╝'
+export const defaultTheme = ' -||||||||||'
+export const minimalTheme = ' - ---------'
+export const lightLineTheme = ' ─│┼├┤┌┬┐└┴┘'
+export const heavyLineTheme = ' ━┃╋┣┫┏┳┓┗┻┛'
+export const doubleLineTheme = ' ═║╬╠╣╔╦╗╚╩╝'
 
 type Options = Partial<{
   // header: boolean  // first row of data should be displayed in header
@@ -125,42 +114,34 @@ export const textTable = (
   titlesOrColumns?: TitleOrColumn[],
   options: Options = {}
 ): string => {
-  const columns = makeColumns(titlesOrColumns, data[0])
-  const formattedData = formatData(data, columns)
+  const columns = getColumns(titlesOrColumns, data[0])
+  const formattedData = getFormattedData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
-  const alignedData = alignData(formattedData, columns, columnWidths)
-  const alignedHeaders = alignHeader(columns, columnWidths)
+  const alignedData = getAlignedData(formattedData, columns, columnWidths)
+  const alignedTitles = getAligndHeader(columns, columnWidths)
 
-  const theme = options.theme ?? minimalTheme
+  const theme = options.theme ?? defaultTheme
+  const themeChars = (...indices: number[]) => indices.map((i) => theme[i])
 
-  const bordered = options.border
-    ? (c: string) => theme[1] + ' ' + c + ' ' + theme[1]
-    : (c: string) => c
+  const borderRow = (outer: string[], inner: string[]) =>
+    options.border ? [makeBordered(outer)(separatorRow(inner, columnWidths))] : []
+  const topBorder = borderRow(themeChars(6, 1, 8), themeChars(1, 7))
+  const bottomBorder = borderRow(themeChars(9, 1, 11), themeChars(1, 10))
 
-  const topBorder = options.border
-    ? [makeSeparator(columnWidths, getBorderChars(theme, 5, 6, 7), options.border)]
-    : []
+  const maybeBordered = options.border ? makeBordered : () => identity
+  const borderedData = maybeBordered(themeChars(2, 0, 2))
+  const sepRow = maybeBordered(themeChars(4, 1, 5))(separatorRow(themeChars(1, 3), columnWidths))
+  const sepCol = themeChars(0, 2, 0).join('')
 
-  const bottomBorder = options.border
-    ? [makeSeparator(columnWidths, getBorderChars(theme, 8, 9, 10), options.border)]
-    : []
-
-  const separator = makeSeparator(columnWidths, getBorderChars(theme, 3, 2, 4), options.border)
-
-  const innerVerticalLine = ' ' + theme[1] + ' '
-
-  const header = titlesOrColumns
-    ? [bordered(alignedHeaders.flat().join(innerVerticalLine)), separator]
-    : []
-
+  const header = titlesOrColumns ? [borderedData(alignedTitles.flat().join(sepCol)), sepRow] : []
   const footerRow = options.footer && alignedData.pop()
-  const footer = footerRow ? [separator, bordered(footerRow.flat().join(innerVerticalLine))] : []
+  const footer = footerRow ? [sepRow, borderedData(footerRow.flat().join(sepCol))] : []
 
   return (
     [
       ...topBorder,
       ...header,
-      ...alignedData.map((row) => bordered(row.flat().join(innerVerticalLine))),
+      ...alignedData.map((row) => borderedData(row.flat().join(sepCol))),
       ...footer,
       ...bottomBorder,
     ].join('\n') + '\n'
