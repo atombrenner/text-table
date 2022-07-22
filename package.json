@@ -1,10 +1,23 @@
 {
   "name": "@atombrenner/text-table",
   "version": "0.1.0",
-  "description": "format data as tables for display in terminal (monospaced fonts)",
-  "main": "index.js",
+  "description": "Render data arrays as text tables for display in terminals with monospaced fonts.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atombrenner/text-table.git"
+  },
+  "homepage": "https://github.com/atombrenner/text-table#readme",
+  "type": "commonjs",
+  "main": "./dist/textTable.js",
+  "types": "./dist/textTable.d.ts",
+  "files": [
+    "dist/",
+    "LICENSE.md"
+  ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "dist": "rm -rf dist && npx tsc -p tsconfig-dist.json",
+    "prepublish": "npm test && npm run dist"
   },
   "author": "Christian Rodemeyer",
   "license": "GPL-3.0-or-later",

@@ -1,20 +1,23 @@
 # @atombrenner/text-table
 
-Create text tables for display with monospaced fonts from data arrays with sensible defaults:
+Render text tables for display with monospaced fonts (terminal, &lt;pre>).
+
+Everything has sensible defaults to give you a pretty text table without configuration:
 
 - minimal bordering
 - autodetect column type (string or number)
 - right align number columns
-- optional header with column names
+- format numbers with two decimal digits
 
 For more advanced use cases you can
 
-- provide your own formatting function per column
+- provide a header with column names
 - specify a max or fixed width per column
 - specify alignment per column
 - display a footer
 - add borders
 - provide your own bordering theme
+- provide your own formatting function per column
 
 This package has zero dependencies.
 
