@@ -1,13 +1,17 @@
-type FormatFn = (v: unknown) => string
+export const defaultTheme = ' -||||||||||'
+export const minimalTheme = ' - ---------'
+export const lightLineTheme = ' ─│┼├┤┌┬┐└┴┘'
+export const heavyLineTheme = ' ━┃╋┣┫┏┳┓┗┻┛'
+export const doubleLineTheme = ' ═║╬╠╣╔╦╗╚╩╝'
 
+export type FormatFn = (v: unknown) => string
 export const formatAny: FormatFn = (v) => `${v}`.trim()
 export const formatNumber =
   (decimalPlaces: number): FormatFn =>
   (v: unknown) =>
     Number(v).toFixed(decimalPlaces)
 
-type AlignFn = (s: string, width: number) => string
-
+export type AlignFn = (s: string, width: number) => string
 export const alignLeft = (s: string, width: number) => s.padEnd(width)
 export const alignRight = (s: string, width: number) => s.padStart(width)
 
@@ -95,23 +99,18 @@ const makeBordered = ([left, line, right]: string[]) => {
 
 const identity = <T>(x: T) => x
 
-export const defaultTheme = ' -||||||||||'
-export const minimalTheme = ' - ---------'
-export const lightLineTheme = ' ─│┼├┤┌┬┐└┴┘'
-export const heavyLineTheme = ' ━┃╋┣┫┏┳┓┗┻┛'
-export const doubleLineTheme = ' ═║╬╠╣╔╦╗╚╩╝'
-
 type Options = Partial<{
-  // header: boolean  // first row of data should be displayed in header
+  header: boolean // first row of data should be displayed in header
   footer: boolean // last row of data should be displayed in footer
   border: boolean // draw a border around the table
   theme: string // a theme string for drawing borders, see README.md
+  // columns: TitleOrColumn[]
   // calculateWidth: (s: string) => number // if data contains ANSI color codes
 }>
 
 export const textTable = (
   data: unknown[][],
-  titlesOrColumns?: TitleOrColumn[],
+  titlesOrColumns?: TitleOrColumn[], // columnsOrOptions = {}
   options: Options = {}
 ): string => {
   const columns = getColumns(titlesOrColumns, data[0])

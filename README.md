@@ -34,7 +34,7 @@ This package has zero dependencies.
 ## Usage Examples
 
 ```typescript
-import { textTable } from '@atombrenner/text-table'
+import { textTable, stringRight, number, lightLineTheme } from '@atombrenner/text-table'
 
 const data = [
   ['Apples', 37.5, 33.13],
@@ -87,34 +87,30 @@ Tangerines |  58.254
 ## Themes with header, footer and border
 
 ```
-lightLineTheme:                   doubleLineTheme
-┌────────────┬────────┬───────┐   ╔════════════╦════════╦═══════╗
-│ Fruits     │    Max │   Avg │   ║ Fruits     ║    Max ║   Avg ║
-├────────────┼────────┼───────┤   ╠════════════╬════════╬═══════╣
-│ Apples     │  37.50 │ 33.13 │   ║ Apples     ║  37.50 ║ 33.13 ║
-│ Bananas    │   4.25 │  4.09 │   ║ Bananas    ║   4.25 ║  4.09 ║
-│ Tangerines │  58.25 │ 45.34 │   ║ Tangerines ║  58.25 ║ 45.34 ║
-├────────────┼────────┼───────┤   ╠════════════╬════════╬═══════╣
-│ Sum        │ 100.00 │ 34.03 │   ║ Sum        ║ 100.00 ║ 34.03 ║
-└────────────┴────────┴───────┘   ╚════════════╩════════╩═══════╝
-
-heavyLineTheme:                   defaultTheme:
-┏━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓   |------------|--------|-------|   |------------|--------|-------|
-┃ Fruits     ┃    Max ┃   Avg ┃   | Fruits     |    Max |   Avg |
-┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫   |------------|--------|-------|
-┃ Apples     ┃  37.50 ┃ 33.13 ┃   | Apples     |  37.50 | 33.13 |
-┃ Bananas    ┃   4.25 ┃  4.09 ┃   | Bananas    |   4.25 |  4.09 |
-┃ Tangerines ┃  58.25 ┃ 45.34 ┃   | Tangerines |  58.25 | 45.34 |
-┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫   |------------|--------|-------|
-┃ Sum        ┃ 100.00 ┃ 34.03 ┃   | Sum        | 100.00 | 34.03 |
-┗━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━┛   |------------|--------|-------|
+lightLineTheme:                doubleLineTheme                heavyLineTheme:
+┌─────────┬────────┬───────┐   ╔═════════╦════════╦═══════╗   ┏━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
+│ Fruits  │    Max │   Avg │   ║ Fruits  ║    Max ║   Avg ║   ┃ Fruits  ┃    Max ┃   Avg ┃
+├─────────┼────────┼───────┤   ╠═════════╬════════╬═══════╣   ┣━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫
+│ Apples  │  37.50 │ 33.13 │   ║ Apples  ║  37.50 ║ 33.13 ║   ┃ Apples  ┃  37.50 ┃ 33.13 ┃
+│ Bananas │   4.25 │  4.09 │   ║ Bananas ║   4.25 ║  4.09 ║   ┃ Bananas ┃   4.25 ┃  4.09 ┃
+│ Pears   │  58.25 │ 45.34 │   ║ Pears   ║  58.25 ║ 45.34 ║   ┃ Pears   ┃  58.25 ┃ 45.34 ┃
+├─────────┼────────┼───────┤   ╠═════════╬════════╬═══════╣   ┣━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫
+│ Sum     │ 100.00 │ 34.03 │   ║ Sum     ║ 100.00 ║ 34.03 ║   ┃ Sum     ┃ 100.00 ┃ 34.03 ┃
+└─────────┴────────┴───────┘   ╚═════════╩════════╩═══════╝   ┗━━━━━━━━━┻━━━━━━━━┻━━━━━━━┛
 ```
 
 You can provide a custom theme by setting a template string if you don't
 like one of the predefined themes.
-A template string defines the [character used to draw borders](https://en.wikipedia.org/wiki/Box-drawing_character).
+A template string defines the [characters for border drawing](https://en.wikipedia.org/wiki/Box-drawing_character).
 
 ## Reference
+
+Overloads:
+
+- textTable(data)
+- textTable(data, columns)
+- textTable(data, options)
+- textTable(data, columns, options)
 
 ## Gotchas
 
