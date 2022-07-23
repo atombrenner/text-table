@@ -2,6 +2,16 @@
 
 Render text tables for display with monospaced fonts (terminal, &lt;pre>).
 
+```
+Fruits     |    Max |   Avg
+-----------|--------|------
+Apples     |  37.50 | 33.13
+Bananas    |   4.25 |  4.09
+Tangerines |  58.25 | 45.34
+-----------|--------|------
+Sum        | 100.00 | 34.03
+```
+
 Everything has sensible defaults to give you a pretty text table without configuration:
 
 - minimal bordering
@@ -16,92 +26,97 @@ For more advanced use cases you can
 - specify alignment per column
 - display a footer
 - add borders
-- provide your own bordering theme
-- provide your own formatting function per column
+- provide custom theme
+- provide custom formatting per column
 
 This package has zero dependencies.
 
-## Usage
-
-```typescript
-import { textTable, number } from '@atombrenner/text-table'
-
-const data = [
-  ['Apples', 37.5],
-  ['Bananas', 4.246],
-  ['Tangerines', 58.254],
-]
-
-console.log(textTable(data))
-// Apples     | 37.50
-// Bananas    |  4.25
-// Tangerines | 58.25
-
-console.log(textTable(data, ['Fruits', 'Percentage']))
-// Fruits     | Percentage
-// -----------|-----------
-// Apples     |      37.50
-// Bananas    |       4.25
-// Tangerines |      58.25
-
-console.log(textTable(data, [stringLeft('Fruits'), number(Percentage, 3)]))
-//     Fruits | Percentage
-// -----------|-----------
-//     Apples |     37.500
-//    Bananas |      4.246
-// Tangerines |     58.254
-
-const data3 = [
-  ['Apples', 37.5, 33.13],
-  ['Bananas', 4.246, 4.09001],
-  ['Tangerines', 58.254, 45.34],
-  ['Sum', 100, 34.030001]
-]
-
-console.log(textTable(data3, ['Fruits', 'Max', 'Avg'], { footer: true })
-// Fruits     |    Max |   Avg
-// -----------|--------|------
-// Apples     |  37.50 | 33.13
-// Bananas    |   4.25 |  4.09
-// Tangerines |  58.25 | 45.34
-// -----------|--------|------
-// Sum        | 100.00 | 34.03
-```
+## Usage Examples
 
 ```typescript
 import { textTable } from '@atombrenner/text-table'
 
 const data = [
-  ['Apples', 37.5],
-  ['Bananas', 4.246],
-  ['Tangerines', 58.254],
+  ['Apples', 37.5, 33.13],
+  ['Bananas', 4.246, 4.09001],
+  ['Tangerines', 58.254, 45.34],
 ]
-
-const textTable = configure(theme, padding, columns)
+console.log(textTable(data))
 ```
 
-## Max Themed Border
-
 ```
-// /-----------------------------\
-// | Fruits     |    Max |   Avg |
-// |------------+--------+-------|
-// | Apples     │  37.50 | 33.13 |
-// | Bananas    │   4.24 |  4.09 |
-// | Tangerines │  58.25 | 45.34 |
-// |------------+--------+-------|
-// | Sum        | 100.00 | 34.03 |
-// \-----------------------------/
-// theme:
+Apples     | 37.50 | 33.13
+Bananas    |  4.25 |  4.09
+Tangerines | 58.25 | 45.34
 ```
 
-Templates
-'-|'
-'-|+'
-'═║╬╠╣╔╦╗╚╩╝'
+- `textTable(data, ['Fruits', 'Percent'])`
 
-see https://en.wikipedia.org/wiki/Box-drawing_character
+```
+Fruits     | Percent
+-----------|-----------
+Apples     |   37.50
+Bananas    |    4.25
+Tangerines |   58.25
+```
+
+- `textTable(data, [stringRight('Fruits'), number('Percent', 3)])`
+
+```
+    Fruits | Percent
+-----------|--------
+    Apples |  37.500
+   Bananas |   4.246
+Tangerines |  58.254
+```
+
+- `textTable(data3, ['Fruits', 'Max', 'Avg'], { footer: true, border: true, theme: lightLineTheme })`
+
+```
+┌────────────┬────────┬───────┐
+│ Fruits     │    Max │   Avg │
+├────────────┼────────┼───────┤
+│ Apples     │  37.50 │ 33.13 │
+│ Bananas    │   4.25 │  4.09 │
+│ Tangerines │  58.25 │ 45.34 │
+├────────────┼────────┼───────┤
+│ Sum        │ 100.00 │ 34.03 │
+└────────────┴────────┴───────┘
+```
+
+## Themes with header, footer and border
+
+```
+lightLineTheme:                   doubleLineTheme
+┌────────────┬────────┬───────┐   ╔════════════╦════════╦═══════╗
+│ Fruits     │    Max │   Avg │   ║ Fruits     ║    Max ║   Avg ║
+├────────────┼────────┼───────┤   ╠════════════╬════════╬═══════╣
+│ Apples     │  37.50 │ 33.13 │   ║ Apples     ║  37.50 ║ 33.13 ║
+│ Bananas    │   4.25 │  4.09 │   ║ Bananas    ║   4.25 ║  4.09 ║
+│ Tangerines │  58.25 │ 45.34 │   ║ Tangerines ║  58.25 ║ 45.34 ║
+├────────────┼────────┼───────┤   ╠════════════╬════════╬═══════╣
+│ Sum        │ 100.00 │ 34.03 │   ║ Sum        ║ 100.00 ║ 34.03 ║
+└────────────┴────────┴───────┘   ╚════════════╩════════╩═══════╝
+
+heavyLineTheme:                   defaultTheme:
+┏━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓   |------------|--------|-------|   |------------|--------|-------|
+┃ Fruits     ┃    Max ┃   Avg ┃   | Fruits     |    Max |   Avg |
+┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫   |------------|--------|-------|
+┃ Apples     ┃  37.50 ┃ 33.13 ┃   | Apples     |  37.50 | 33.13 |
+┃ Bananas    ┃   4.25 ┃  4.09 ┃   | Bananas    |   4.25 |  4.09 |
+┃ Tangerines ┃  58.25 ┃ 45.34 ┃   | Tangerines |  58.25 | 45.34 |
+┣━━━━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫   |------------|--------|-------|
+┃ Sum        ┃ 100.00 ┃ 34.03 ┃   | Sum        | 100.00 | 34.03 |
+┗━━━━━━━━━━━━┻━━━━━━━━┻━━━━━━━┛   |------------|--------|-------|
+```
+
+You can provide a custom theme by setting a template string if you don't
+like one of the predefined themes.
+A template string defines the [character used to draw borders](https://en.wikipedia.org/wiki/Box-drawing_character).
+
+## Reference
 
 ## Gotchas
 
-- no support for ansi colors, can be solved by injecting a custom string length function that ignores zero length terminal codes
+- no support for [ANSI escape sequences](https://en.wikipedia.org/wiki/ANSI_escape_code)
+  or other zero-length terminal characters
