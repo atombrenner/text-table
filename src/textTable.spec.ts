@@ -1,3 +1,4 @@
+import { Column } from '../dist/textTable'
 import {
   textTable,
   lightLineTheme,
@@ -8,6 +9,7 @@ import {
   alignLeft,
   alignRight,
   formatNumber,
+  string,
 } from './textTable'
 
 const firstSpace = /\n */g
@@ -101,9 +103,30 @@ describe('textTable', () => {
     `)
   })
 
-  it.todo('should render fixedWidth columns')
+  it('should render a fixedWidth column', () => {
+    const column: Column = { ...string('Fixed'), fixedWidth: 15 }
+    const text = textTable(data, [column, 'Max'])
+    expect(text).toEqual(trim`
+      Fixed           |   Max
+      ----------------|------
+      Apples          | 37.50
+      Bananas         |  4.25
+      Tangerines      | 58.25
+    `)
+  })
 
-  it.todo('should cut content not fitting into maxWidth columns')
+  it.only('should render and cut a maxWidth column', () => {
+    const col1: Column = { ...string('MaxWidth'), maxWidth: 7 }
+    const col2: Column = { ...number('Max'), maxWidth: 4 }
+    const text = textTable(data, [col1, col2])
+    expect(text).toEqual(trim`
+      MaxWid… |  Max
+      --------|-----
+      Apples  | ….50
+      Bananas | 4.25
+      Tanger… | ….25
+    `)
+  })
 
   it('should render a footer', () => {
     const text = textTable(dataWithFooter, header, { footer: true })

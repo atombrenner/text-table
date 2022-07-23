@@ -12,8 +12,10 @@ export const formatNumber =
     Number(v).toFixed(decimalPlaces)
 
 export type AlignFn = (s: string, width: number) => string
-export const alignLeft = (s: string, width: number) => s.padEnd(width)
-export const alignRight = (s: string, width: number) => s.padStart(width)
+export const alignLeft = (s: string, width: number) =>
+  s.length > width ? s.substring(0, width - 1) + '…' : s.padEnd(width)
+export const alignRight = (s: string, width: number) =>
+  s.length > width ? '…' + s.substring(s.length - width + 1) : s.padStart(width)
 
 export type Column = {
   title: string
