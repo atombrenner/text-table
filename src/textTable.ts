@@ -17,22 +17,21 @@ export const alignLeft = (s: string, width: number) =>
 export const alignRight = (s: string, width: number) =>
   s.length > width ? '…' + s.substring(s.length - width + 1) : s.padStart(width)
 
-export type Column = {
+export type ColumnSpec = {
   title: string
-  titleAlign: AlignFn
   format: FormatFn
   align: AlignFn
+  titleAlign?: AlignFn
   maxWidth?: number
   fixedWidth?: number
 }
 
-export type TitleOrColumn = string | Column | undefined
+export type Column = string | ColumnSpec | undefined
 
 export const stringLeft = (title: string) => ({
   title,
   format: formatAny,
   align: alignLeft,
-  titleAlign: alignLeft,
 })
 export const string = stringLeft
 
@@ -40,46 +39,47 @@ export const stringRight = (title: string) => ({
   title,
   format: formatAny,
   align: alignRight,
-  titleAlign: alignRight,
 })
 
 export const number = (title: string, decimalPlaces = 2) => ({
   title,
   format: formatNumber(decimalPlaces),
   align: alignRight,
-  titleAlign: alignRight,
 })
 
-export const getColumns = (
-  titlesOrColumns: TitleOrColumn[] | undefined,
+export const getColumnSpecs = (
+  columns: Column[] | undefined,
   firstRow: unknown[] | undefined
-): Column[] => {
-  if (!titlesOrColumns) {
-    titlesOrColumns = firstRow ? Array<string>(firstRow.length).fill('') : []
+): ColumnSpec[] => {
+  if (!columns) {
+    columns = firstRow ? Array<string>(firstRow.length).fill('') : []
   }
   if (!firstRow) {
-    firstRow = Array<unknown>(titlesOrColumns.length).fill('')
+    firstRow = Array<unknown>(columns.length).fill('')
   }
 
-  return titlesOrColumns.map((titleOrColumn, i) => {
-    if (typeof titleOrColumn === 'object') return titleOrColumn
-    const title = titleOrColumn ?? ''
+  return columns.map((column, i) => {
+    if (typeof column === 'object') return column
+    const title = column ?? ''
     // @ts-expect-error -- seems to be a typescript bug because firstRow is always defined at this point
     return typeof firstRow[i] === 'number' ? number(title) : string(title)
   })
 }
 
-const getFormattedData = (data: unknown[][], columns: Column[]): string[][] =>
+const getFormattedData = (data: unknown[][], columns: ColumnSpec[]): string[][] =>
   data.map((row) => columns.map(({ format }, i) => format(row[i])))
 
-const getAlignedData = (data: string[][], columns: Column[], columnWidths: number[]): string[][] =>
-  data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
+const getAlignedData = (
+  data: string[][],
+  columns: ColumnSpec[],
+  columnWidths: number[]
+): string[][] => data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
 
-const getAligndHeader = (columns: Column[], columnWidths: number[]): string[] =>
-  columns.map(({ title, titleAlign }, i) => titleAlign(title, columnWidths[i]))
+const getAligndHeader = (columns: ColumnSpec[], columnWidths: number[]): string[] =>
+  columns.map(({ title, titleAlign, align }, i) => (titleAlign ?? align)(title, columnWidths[i]))
 
-const getMaxColumnWidths = (data: string[][], columns: Column[]) =>
-  columns.map((column: Column, columnIndex: number) =>
+const getMaxColumnWidths = (data: string[][], columns: ColumnSpec[]) =>
+  columns.map((column: ColumnSpec, columnIndex: number) =>
     Math.min(
       column.maxWidth ?? Number.POSITIVE_INFINITY,
       column.fixedWidth ??
@@ -101,21 +101,36 @@ const makeBordered = ([left, line, right]: string[]) => {
 
 const identity = <T>(x: T) => x
 
+const getMergedOptions = (columnsOrOptions?: Column[] | Options, maybeOptions?: Options) => {
+  if (!columnsOrOptions || Array.isArray(columnsOrOptions)) {
+    return { ...maybeOptions, columns: columnsOrOptions }
+  } else {
+    return columnsOrOptions
+  }
+}
+
 type Options = Partial<{
   header: boolean // first row of data should be displayed in header
   footer: boolean // last row of data should be displayed in footer
   border: boolean // draw a border around the table
   theme: string // a theme string for drawing borders, see README.md
-  // columns: TitleOrColumn[]
+  columns: Column[] // a fuzzy definition of columns
   // calculateWidth: (s: string) => number // if data contains ANSI color codes
 }>
 
-export const textTable = (
+export interface TextTableFn {
+  (data: unknown[][]): string
+  (data: unknown[][], columns: Column[], options?: Options): string
+  (data: unknown[][], options: Options): string
+}
+
+export const textTable: TextTableFn = (
   data: unknown[][],
-  titlesOrColumns?: TitleOrColumn[], // columnsOrOptions = {}
-  options: Options = {}
+  columnsOrOptions?: Column[] | Options,
+  maybeOptions?: Options
 ): string => {
-  const columns = getColumns(titlesOrColumns, data[0])
+  const options = getMergedOptions(columnsOrOptions, maybeOptions)
+  const columns = getColumnSpecs(options.columns, data[0])
   const formattedData = getFormattedData(data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = getAlignedData(formattedData, columns, columnWidths)
@@ -134,7 +149,7 @@ export const textTable = (
   const sepRow = maybeBordered(themeChars(4, 1, 5))(separatorRow(themeChars(1, 3), columnWidths))
   const sepCol = themeChars(0, 2, 0).join('')
 
-  const header = titlesOrColumns ? [borderedData(alignedTitles.flat().join(sepCol)), sepRow] : []
+  const header = options.columns ? [borderedData(alignedTitles.flat().join(sepCol)), sepRow] : []
   const footerRow = options.footer && alignedData.pop()
   const footer = footerRow ? [sepRow, borderedData(footerRow.flat().join(sepCol))] : []
 

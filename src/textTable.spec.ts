@@ -1,4 +1,3 @@
-import { Column } from '../dist/textTable'
 import {
   textTable,
   lightLineTheme,
@@ -10,6 +9,7 @@ import {
   alignRight,
   formatNumber,
   string,
+  ColumnSpec,
 } from './textTable'
 
 const firstSpace = /\n */g
@@ -104,7 +104,7 @@ describe('textTable', () => {
   })
 
   it('should render a fixedWidth column', () => {
-    const column: Column = { ...string('Fixed'), fixedWidth: 15 }
+    const column: ColumnSpec = { ...string('Fixed'), fixedWidth: 15 }
     const text = textTable(data, [column, 'Max'])
     expect(text).toEqual(trim`
       Fixed           |   Max
@@ -115,9 +115,9 @@ describe('textTable', () => {
     `)
   })
 
-  it.only('should render and cut a maxWidth column', () => {
-    const col1: Column = { ...string('MaxWidth'), maxWidth: 7 }
-    const col2: Column = { ...number('Max'), maxWidth: 4 }
+  it('should render and cut a maxWidth column', () => {
+    const col1: ColumnSpec = { ...string('MaxWidth'), maxWidth: 7 }
+    const col2: ColumnSpec = { ...number('Max'), maxWidth: 4 }
     const text = textTable(data, [col1, col2])
     expect(text).toEqual(trim`
       MaxWid… |  Max
