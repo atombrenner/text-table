@@ -37,13 +37,8 @@ describe('textTable', () => {
     expect(textTable([])).toEqual('\n')
   })
 
-  it('should render table without header for no column definition', () => {
-    const text = textTable(data)
-    expect(text).toEqual(trim`
-      Apples     | 37.50 | 33.13
-      Bananas    |  4.25 |  4.09
-      Tangerines | 58.25 | 45.34
-    `)
+  it('should render two empty lines for empty data, no column definition and options.header', () => {
+    expect(textTable([], { header: true })).toEqual('\n\n')
   })
 
   it('should render header only for empty data', () => {
@@ -51,6 +46,15 @@ describe('textTable', () => {
     expect(text).toEqual(trim`
       Fruits | Max | Avg
       -------|-----|----                        
+    `)
+  })
+
+  it('should render table without header for no column definition', () => {
+    const text = textTable(data)
+    expect(text).toEqual(trim`
+      Apples     | 37.50 | 33.13
+      Bananas    |  4.25 |  4.09
+      Tangerines | 58.25 | 45.34
     `)
   })
 
@@ -65,9 +69,20 @@ describe('textTable', () => {
     `)
   })
 
+  it('should render a header supplied with data', () => {
+    const text = textTable([header, ...data], { header: true })
+    expect(text).toEqual(trim`
+      Fruits     |   Max |   Avg
+      -----------|-------|------
+      Apples     | 37.50 | 33.13
+      Bananas    |  4.25 |  4.09
+      Tangerines | 58.25 | 45.34
+    `)
+  })
+
   it('should render one column data', () => {
     const text = textTable(truncate(data, 1), ['Fruits'])
-    // careful, because first column is not right aligned, there is sensitive whitespaces in the expected value
+    // careful with expected value, there is sensitive whitespace on the right, because the column is left aligned
     expect(text).toEqual(trim`
       Fruits    
       ----------

@@ -54,7 +54,7 @@ Tangerines | 58.25 | 45.34
 
 ```
 Fruits     | Percent
------------|-----------
+-----------|--------
 Apples     |   37.50
 Bananas    |    4.25
 Tangerines |   58.25
@@ -70,7 +70,7 @@ Tangerines |   58.25
 Tangerines |  58.254
 ```
 
-- `textTable(data3, ['Fruits', 'Max', 'Avg'], { footer: true, border: true, theme: lightLineTheme })`
+- `textTable(data, ['Fruits', 'Max', 'Avg'], { footer: true, border: true, theme: lightLineTheme })`
 
 ```
 ┌────────────┬────────┬───────┐
@@ -109,8 +109,8 @@ Overloads:
 
 - textTable(data)
 - textTable(data, columns)
-- textTable(data, options)
 - textTable(data, columns, options)
+- textTable(data, options)
 
 ## Gotchas
 

@@ -28,6 +28,15 @@ export type ColumnSpec = {
 
 export type Column = string | ColumnSpec | undefined
 
+export type Options = Partial<{
+  header: boolean // first row of data should be displayed in header
+  footer: boolean // last row of data should be displayed in footer
+  border: boolean // draw a border around the table
+  theme: string // a theme string for drawing borders, see README.md
+  columns: Column[] // customize a column, specify title, alignment, etc
+  // calculateWidth: (s: string) => number // if data contains ANSI color codes, we would need to calculate the length differently
+}>
+
 export const stringLeft = (title: string) => ({
   title,
   format: formatAny,
@@ -47,23 +56,23 @@ export const number = (title: string, decimalPlaces = 2) => ({
   align: alignRight,
 })
 
-export const getColumnSpecs = (
-  columns: Column[] | undefined,
-  firstRow: unknown[] | undefined
-): ColumnSpec[] => {
-  if (!columns) {
-    columns = firstRow ? Array<string>(firstRow.length).fill('') : []
+const getMergedOptions = (columnsOrOptions?: Column[] | Options, maybeOptions?: Options) => {
+  if (!columnsOrOptions || Array.isArray(columnsOrOptions)) {
+    return { ...maybeOptions, columns: columnsOrOptions }
+  } else {
+    return columnsOrOptions
   }
-  if (!firstRow) {
-    firstRow = Array<unknown>(columns.length).fill('')
-  }
+}
 
-  return columns.map((column, i) => {
+export const getColumnSpecs = (data: unknown[][], options: Options): ColumnSpec[] => {
+  const columns = options.columns ?? Array<string>(data.length > 0 ? data[0].length : 0).fill('')
+  const probe = options.header ? data[1] : data[0]
+  const specs = columns.map((column, i) => {
     if (typeof column === 'object') return column
     const title = column ?? ''
-    // @ts-expect-error -- seems to be a typescript bug because firstRow is always defined at this point
-    return typeof firstRow[i] === 'number' ? number(title) : string(title)
+    return probe && typeof probe[i] === 'number' ? number(title) : string(title)
   })
+  return options.header ? specs.map((spec, i) => ({ ...spec, title: `${data[0][i]}` })) : specs
 }
 
 const getFormattedData = (data: unknown[][], columns: ColumnSpec[]): string[][] =>
@@ -101,24 +110,7 @@ const makeBordered = ([left, line, right]: string[]) => {
 
 const identity = <T>(x: T) => x
 
-const getMergedOptions = (columnsOrOptions?: Column[] | Options, maybeOptions?: Options) => {
-  if (!columnsOrOptions || Array.isArray(columnsOrOptions)) {
-    return { ...maybeOptions, columns: columnsOrOptions }
-  } else {
-    return columnsOrOptions
-  }
-}
-
-type Options = Partial<{
-  header: boolean // first row of data should be displayed in header
-  footer: boolean // last row of data should be displayed in footer
-  border: boolean // draw a border around the table
-  theme: string // a theme string for drawing borders, see README.md
-  columns: Column[] // a fuzzy definition of columns
-  // calculateWidth: (s: string) => number // if data contains ANSI color codes
-}>
-
-export interface TextTableFn {
+export type TextTableFn = {
   (data: unknown[][]): string
   (data: unknown[][], columns: Column[], options?: Options): string
   (data: unknown[][], options: Options): string
@@ -130,8 +122,8 @@ export const textTable: TextTableFn = (
   maybeOptions?: Options
 ): string => {
   const options = getMergedOptions(columnsOrOptions, maybeOptions)
-  const columns = getColumnSpecs(options.columns, data[0])
-  const formattedData = getFormattedData(data, columns)
+  const columns = getColumnSpecs(data, options)
+  const formattedData = getFormattedData(options.header ? data.slice(1) : data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = getAlignedData(formattedData, columns, columnWidths)
   const alignedTitles = getAligndHeader(columns, columnWidths)
@@ -139,17 +131,18 @@ export const textTable: TextTableFn = (
   const theme = options.theme ?? defaultTheme
   const themeChars = (...indices: number[]) => indices.map((i) => theme[i])
 
-  const borderRow = (outer: string[], inner: string[]) =>
+  const borderedRow = (outer: string[], inner: string[]) =>
     options.border ? [makeBordered(outer)(separatorRow(inner, columnWidths))] : []
-  const topBorder = borderRow(themeChars(6, 1, 8), themeChars(1, 7))
-  const bottomBorder = borderRow(themeChars(9, 1, 11), themeChars(1, 10))
+  const topBorder = borderedRow(themeChars(6, 1, 8), themeChars(1, 7))
+  const bottomBorder = borderedRow(themeChars(9, 1, 11), themeChars(1, 10))
 
   const maybeBordered = options.border ? makeBordered : () => identity
   const borderedData = maybeBordered(themeChars(2, 0, 2))
   const sepRow = maybeBordered(themeChars(4, 1, 5))(separatorRow(themeChars(1, 3), columnWidths))
   const sepCol = themeChars(0, 2, 0).join('')
 
-  const header = options.columns ? [borderedData(alignedTitles.flat().join(sepCol)), sepRow] : []
+  const headerRow = options.header || options.columns ? alignedTitles : undefined
+  const header = headerRow ? [borderedData(headerRow.flat().join(sepCol)), sepRow] : []
   const footerRow = options.footer && alignedData.pop()
   const footer = footerRow ? [sepRow, borderedData(footerRow.flat().join(sepCol))] : []
 
