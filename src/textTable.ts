@@ -10,10 +10,10 @@ export const formatNumber =
   (decimalPlaces: number): FormatFn =>
   (v: unknown) =>
     Number(v).toFixed(decimalPlaces)
-export const formatPercent =
-  (factor: number, decimalPlaces: number, percent: string): FormatFn =>
+export const formatUnit =
+  (unitSign: string, factor: number, decimalPlaces: number): FormatFn =>
   (v: unknown) =>
-    (Number(v) * factor).toFixed(decimalPlaces) + percent
+    (Number(v) * factor).toFixed(decimalPlaces) + unitSign
 
 export type AlignFn = (s: string, width: number) => string
 export const alignLeft = (s: string, width: number) =>
@@ -60,11 +60,14 @@ export const number = (title: string, decimalPlaces = 2) => ({
   align: alignRight,
 })
 
-export const percent = (title: string, factor = 100, decimalPlaces = 0, percentSymbol = '%') => ({
+export const unit = (title: string, unitSign: string, factor = 1, decimalPlaces = 2) => ({
   title,
-  format: formatPercent(factor, decimalPlaces, percentSymbol),
+  format: formatUnit(unitSign, factor, decimalPlaces),
   align: alignRight,
 })
+
+export const percent = (title: string, factor = 100, decimalPlaces = 0) =>
+  unit(title, ' %', factor, decimalPlaces)
 
 const getMergedOptions = (columnsOrOptions?: Column[] | Options, maybeOptions?: Options) => {
   if (!columnsOrOptions || Array.isArray(columnsOrOptions)) {
