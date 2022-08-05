@@ -1,4 +1,4 @@
-import { formatAny, formatNumber } from './textTable'
+import { formatAny, formatNumber, formatPercent } from './textTable'
 
 describe('format', () => {
   it.each([
@@ -42,5 +42,20 @@ describe('format', () => {
     const format = formatNumber(3)
     expect(format(1.0)).toEqual('1.000')
     expect(format(1.1)).toEqual('1.100')
+  })
+
+  it('formatPercent should apply factor and decimal places', () => {
+    const format100 = formatPercent(100, 0, '%')
+    expect(format100(1.0)).toEqual('100%')
+    expect(format100(0.5)).toEqual('50%')
+    const format = formatPercent(1, 1, '%')
+    expect(format(100.0)).toEqual('100.0%')
+    expect(format(58.254)).toEqual('58.3%')
+  })
+
+  it('formatPercent should append custom percent symbol', () => {
+    const format = formatPercent(100, 0, ' **')
+    expect(format(1.0)).toEqual('100 **')
+    expect(format(0.5)).toEqual('50 **')
   })
 })

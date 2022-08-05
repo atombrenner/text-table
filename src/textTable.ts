@@ -10,6 +10,10 @@ export const formatNumber =
   (decimalPlaces: number): FormatFn =>
   (v: unknown) =>
     Number(v).toFixed(decimalPlaces)
+export const formatPercent =
+  (factor: number, decimalPlaces: number, percent: string): FormatFn =>
+  (v: unknown) =>
+    (Number(v) * factor).toFixed(decimalPlaces) + percent
 
 export type AlignFn = (s: string, width: number) => string
 export const alignLeft = (s: string, width: number) =>
@@ -53,6 +57,12 @@ export const stringRight = (title: string) => ({
 export const number = (title: string, decimalPlaces = 2) => ({
   title,
   format: formatNumber(decimalPlaces),
+  align: alignRight,
+})
+
+export const percent = (title: string, factor = 100, decimalPlaces = 0, percentSymbol = '%') => ({
+  title,
+  format: formatPercent(factor, decimalPlaces, percentSymbol),
   align: alignRight,
 })
 

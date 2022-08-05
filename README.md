@@ -70,6 +70,16 @@ Tangerines |   58.25
 Tangerines |  58.254
 ```
 
+- `textTable(data, ['Fruits', percent('Percent', 1)])`
+
+```
+    Fruits | Percent
+-----------|--------
+    Apples |  37.5%
+   Bananas |   4.3%
+Tangerines |  58.3%
+```
+
 - `textTable(data, ['Fruits', 'Max', 'Avg'], { footer: true, border: true, theme: lightLineTheme })`
 
 ```
