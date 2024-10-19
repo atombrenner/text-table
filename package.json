@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "lint": "eslint src",
     "dist": "rm -rf dist && npx tsc -p tsconfig-dist.json",
     "prepublishOnly": "npm test && npm run dist"
   },
@@ -25,14 +26,21 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-typescript": "^7.0.0",
+    "@eslint/js": "^9.13.0",
     "@tsconfig/node20": "^20.0.0",
     "@types/jest": "^29.0.0",
     "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.10.0",
+    "@typescript-eslint/parser": "^8.10.0",
     "babel-jest": "^29.0.0",
+    "eslint": "^9.13.0",
+    "eslint-plugin-jest": "^28.8.3",
+    "globals": "^15.11.0",
     "jest": "^29.0.0",
     "prettier": "^3.0.0",
     "ts-node-dev": "^2.0.0",
     "tslib": "^2.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.10.0"
   }
 }

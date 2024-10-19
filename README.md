@@ -97,7 +97,7 @@ Tangerines |  58.3%
 ## Themes with header, footer and border
 
 ```
-lightLineTheme:                doubleLineTheme                heavyLineTheme:
+lightLineTheme:                doubleLineTheme:               heavyLineTheme:
 ┌─────────┬────────┬───────┐   ╔═════════╦════════╦═══════╗   ┏━━━━━━━━━┳━━━━━━━━┳━━━━━━━┓
 │ Fruits  │    Max │   Avg │   ║ Fruits  ║    Max ║   Avg ║   ┃ Fruits  ┃    Max ┃   Avg ┃
 ├─────────┼────────┼───────┤   ╠═════════╬════════╬═══════╣   ┣━━━━━━━━━╋━━━━━━━━╋━━━━━━━┫

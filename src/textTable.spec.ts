@@ -101,7 +101,7 @@ describe('textTable', () => {
   `)
   })
 
-  it('should render custom columns ', () => {
+  it('should render custom columns', () => {
     const avgColumn = {
       title: 'Avg',
       align: alignRight,
@@ -229,7 +229,8 @@ describe('textTable', () => {
   })
 
   describe('given a sparse column definition', () => {
-    it('should not render first column ', () => {
+    it('should not render first column', () => {
+      // eslint-disable-next-line no-sparse-arrays -- sparse column arrays can be used for hiding columns
       const text = textTable(data, [, 'Max', 'Avg'])
       expect(text).toEqual(trim`
         Max |   Avg
@@ -241,6 +242,7 @@ describe('textTable', () => {
     })
 
     it('should not render second column', () => {
+      // eslint-disable-next-line no-sparse-arrays -- sparse arrays can be used for hiding columns
       const text = textTable(data, ['Fruits', , 'Avg'])
       expect(text).toEqual(trim`
       Fruits     |   Avg

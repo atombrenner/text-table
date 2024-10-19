@@ -89,12 +89,12 @@ export const getColumnSpecs = (data: unknown[][], options: Options): ColumnSpec[
 }
 
 const getFormattedData = (data: unknown[][], columns: ColumnSpec[]): string[][] =>
-  data.map((row) => columns.map(({ format }, i) => format(row[i])))
+  data.map((row) => columns.map(({ format }, i) => format(row[i]))) // make use of sparse arrays for implicit filtering
 
 const getAlignedData = (
   data: string[][],
   columns: ColumnSpec[],
-  columnWidths: number[]
+  columnWidths: number[],
 ): string[][] => data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
 
 const getAligndHeader = (columns: ColumnSpec[], columnWidths: number[]): string[] =>
@@ -107,9 +107,9 @@ const getMaxColumnWidths = (data: string[][], columns: ColumnSpec[]) =>
       column.fixedWidth ??
         data.reduce(
           (maxWidth, row) => Math.max(maxWidth, row[columnIndex].length),
-          column.title.length
-        )
-    )
+          column.title.length,
+        ),
+    ),
   )
 
 const separatorRow = ([line, join]: string[], widths: number[]) =>
@@ -132,7 +132,7 @@ export type TextTableFn = {
 export const textTable: TextTableFn = (
   data: unknown[][],
   columnsOrOptions?: Column[] | Options,
-  maybeOptions?: Options
+  maybeOptions?: Options,
 ): string => {
   const options = getMergedOptions(columnsOrOptions, maybeOptions)
   const columns = getColumnSpecs(data, options)
