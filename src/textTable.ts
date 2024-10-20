@@ -124,9 +124,8 @@ const makeBordered = ([left, line, right]: string[]) => {
 const identity = <T>(x: T) => x
 
 export type TextTableFn = {
-  (data: unknown[][]): string
+  (data: unknown[][], options?: Options): string
   (data: unknown[][], columns: Column[], options?: Options): string
-  (data: unknown[][], options: Options): string
 }
 
 export const textTable: TextTableFn = (
