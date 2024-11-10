@@ -4,18 +4,21 @@ import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default [
-  { files: ['**/*.{js,mjs,cjs,ts}'] },
-  { languageOptions: { globals: globals['shared-node-browser'] } },
-  pluginJs.configs.recommended,
-  jest.configs['flat/recommended'],
-  ...tseslint.configs.strictTypeChecked,
+  { files: ['**/*ts'] },
+  { ignores: ['**/*.{js,mjs}'] },
   {
     languageOptions: {
+      globals: globals['shared-node-browser'],
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
+  },
+  pluginJs.configs.recommended,
+  jest.configs['flat/recommended'],
+  ...tseslint.configs.strictTypeChecked,
+  {
     rules: {
       '@typescript-eslint/restrict-template-expressions': 'off',
     },
