@@ -83,6 +83,7 @@ export const getColumnSpecs = (data: unknown[][], options: Options): ColumnSpec[
   const specs = columns.map((column, i) => {
     if (typeof column === 'object') return column
     const title = column ?? ''
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- probe may be undefined, but it's not reflected in the inferred type, see noUncheckedIndexedAccess tsconfig option
     return probe && typeof probe[i] === 'number' ? number(title) : string(title)
   })
   return options.header ? specs.map((spec, i) => ({ ...spec, title: `${data[0][i]}` })) : specs

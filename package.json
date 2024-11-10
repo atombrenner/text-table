@@ -18,7 +18,7 @@
     "test": "jest",
     "lint": "eslint src",
     "dist": "rm -rf dist && npx tsc -p tsconfig-dist.json",
-    "prepublishOnly": "npm test && npm run dist"
+    "prepublishOnly": "npm test && eslint src && npm run dist"
   },
   "author": "Christian Rodemeyer",
   "license": "GPL-3.0-or-later",
