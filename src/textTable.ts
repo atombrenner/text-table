@@ -104,7 +104,7 @@ const getAlignedData = (
   columnWidths: number[],
 ): string[][] => data.map((row) => columns.map(({ align }, i) => align(row[i], columnWidths[i])))
 
-const getAligndHeader = (columns: ColumnSpec[], columnWidths: number[]): string[] =>
+const getAlignedHeader = (columns: ColumnSpec[], columnWidths: number[]): string[] =>
   columns.map(({ title, titleAlign, align }, i) => (titleAlign ?? align)(title, columnWidths[i]))
 
 const getMaxColumnWidths = (data: string[][], columns: ColumnSpec[]) =>
@@ -145,7 +145,7 @@ export const textTable: TextTableFn = (
   const formattedData = getFormattedData(options.header ? data.slice(1) : data, columns)
   const columnWidths = getMaxColumnWidths(formattedData, columns)
   const alignedData = getAlignedData(formattedData, columns, columnWidths)
-  const alignedTitles = getAligndHeader(columns, columnWidths)
+  const alignedTitles = getAlignedHeader(columns, columnWidths)
 
   const theme = options.theme ?? defaultTheme
   const themeChars = (...indices: number[]) => indices.map((i) => theme[i])

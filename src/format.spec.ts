@@ -18,11 +18,11 @@ describe('format', () => {
     [1, '1.00'],
     [0.123, '0.12'],
     [123.456, '123.46'],
-    [null, '0.00'], // strange, maybe improve formatter
-    [false, '0.00'], // strange, maybe improve formatter
+    [null, '0.00'], // strange, results from coercion to number
+    [false, '0.00'], // strange, results from coercion to number
     [undefined, 'NaN'],
     ['bla', 'NaN'],
-    ['123', '123.00'], // do we really want to autoconvert
+    ['123', '123.00'], // strange, results from coercion to number
   ])('formatNumber(2) should format %p as "%s"', (value, formatted) => {
     expect(formatNumber(2)(value)).toEqual(formatted)
   })

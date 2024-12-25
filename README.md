@@ -1,6 +1,6 @@
 # @atombrenner/text-table
 
-Render text tables for display with monospaced fonts (terminal, &lt;pre>).
+Render text tables for display with monospaced fonts (terminal, &lt;pre> tags).
 
 ```
 Fruits     |    Max |   Avg
