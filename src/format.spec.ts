@@ -9,8 +9,9 @@ describe('format', () => {
     [undefined, 'undefined'],
     [17.345, '17.345'],
     [{ bla: 5 }, '[object Object]'],
-  ])('formatAny should format %p as %s', (value, formatted) => {
-    expect(formatAny(value)).toEqual(formatted)
+    [new Date('2024-01-01T01:02:03.004Z'), '2024-01-01T01:02:03.004Z'],
+  ])('formatAny() should format %p as "%s"', (value, formatted) => {
+    expect(formatAny()(value)).toEqual(formatted)
   })
 
   it.each([
@@ -22,7 +23,7 @@ describe('format', () => {
     [undefined, 'NaN'],
     ['bla', 'NaN'],
     ['123', '123.00'], // do we really want to autoconvert
-  ])('formatNumber(2) should format %p as %p', (value, formatted) => {
+  ])('formatNumber(2) should format %p as "%s"', (value, formatted) => {
     expect(formatNumber(2)(value)).toEqual(formatted)
   })
 
@@ -33,12 +34,12 @@ describe('format', () => {
     [3, '0.123'],
     [4, '0.1235'], // note the rounding
     [5, '0.12346'], // note the rounding
-  ])('formatNumber(%i) should format 0.123456 as %p', (decimalPlaces, formatted) => {
+  ])('formatNumber(%i) should format 0.123456 as "%s"', (decimalPlaces, formatted) => {
     const format = formatNumber(decimalPlaces)
     expect(format(0.123456)).toEqual(formatted)
   })
 
-  it('formatNumber should append zero decimal places', () => {
+  it('formatNumber(3) should append zero decimal places', () => {
     const format = formatNumber(3)
     expect(format(1.0)).toEqual('1.000')
     expect(format(1.1)).toEqual('1.100')

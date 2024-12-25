@@ -7,6 +7,9 @@ import {
   heavyLineTheme,
   defaultTheme,
   minimalTheme,
+  stringRight,
+  number,
+  percent,
 } from './src/textTable'
 
 const data = [
@@ -21,6 +24,8 @@ const header = ['Fruits', 'Max', 'Avg']
 console.log()
 
 console.log(textTable([header, ...data], { header: true, footer: true }))
+console.log(textTable(data, [stringRight('Fruits'), number('Percent', 3)]))
+console.log(textTable(data, ['Fruits', percent('Percent', 1)]))
 console.log(textTable(data, header, { footer: true, theme: defaultTheme }))
 console.log(textTable(data, header, { footer: true, theme: minimalTheme }))
 console.log(textTable(data, header, { footer: true, border: true }))

@@ -18,7 +18,8 @@
     "test": "jest",
     "lint": "eslint src",
     "dist": "rm -rf dist && npx tsc -p tsconfig-dist.json",
-    "prepublishOnly": "npm test && eslint src && npm run dist"
+    "prepublishOnly": "npm test && eslint src && npm run dist",
+    "example": "npx ts-node-dev --respawn -T example.ts"
   },
   "author": "Christian Rodemeyer",
   "license": "GPL-3.0-or-later",
@@ -40,7 +41,7 @@
     "prettier": "^3.0.0",
     "ts-node-dev": "^2.0.0",
     "tslib": "^2.0.0",
-    "typescript": "^5.0.0",
+    "typescript": "^5.6.0",
     "typescript-eslint": "^8.10.0"
   }
 }

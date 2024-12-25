@@ -5,7 +5,8 @@ export const heavyLineTheme = ' ━┃╋┣┫┏┳┓┗┻┛'
 export const doubleLineTheme = ' ═║╬╠╣╔╦╗╚╩╝'
 
 export type FormatFn = (v: unknown) => string
-export const formatAny: FormatFn = (v) => `${v}`.trim()
+export const formatAny = (): FormatFn => (v) =>
+  v instanceof Date ? v.toISOString() : `${v}`.trim()
 export const formatNumber =
   (decimalPlaces: number): FormatFn =>
   (v: unknown) =>
@@ -41,26 +42,31 @@ export type Options = Partial<{
   // calculateWidth: (s: string) => number // if data contains ANSI color codes, we would need to calculate the length differently
 }>
 
-export const stringLeft = (title: string) => ({
+export const stringLeft = (title: string): ColumnSpec => ({
   title,
-  format: formatAny,
+  format: formatAny(),
   align: alignLeft,
 })
 export const string = stringLeft
 
-export const stringRight = (title: string) => ({
+export const stringRight = (title: string): ColumnSpec => ({
   title,
-  format: formatAny,
+  format: formatAny(),
   align: alignRight,
 })
 
-export const number = (title: string, decimalPlaces = 2) => ({
+export const number = (title: string, decimalPlaces = 2): ColumnSpec => ({
   title,
   format: formatNumber(decimalPlaces),
   align: alignRight,
 })
 
-export const unit = (title: string, unitSign: string, factor = 1, decimalPlaces = 2) => ({
+export const unit = (
+  title: string,
+  unitSign: string,
+  factor = 1,
+  decimalPlaces = 2,
+): ColumnSpec => ({
   title,
   format: formatUnit(unitSign, factor, decimalPlaces),
   align: alignRight,
@@ -80,14 +86,14 @@ const getMergedOptions = (columnsOrOptions?: Column[] | Options, maybeOptions?: 
 export const getColumnSpecs = (data: unknown[][], options: Options): ColumnSpec[] => {
   const columns = options.columns ?? Array<string>(data.length > 0 ? data[0].length : 0).fill('')
   const probe = options.header ? data[1] : data[0]
-  const specs = columns.map((column, i) => {
-    if (typeof column === 'object') return column
-    const title = column ?? ''
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- probe may be undefined, but it's not reflected in the inferred type, see noUncheckedIndexedAccess tsconfig option
-    return probe && typeof probe[i] === 'number' ? number(title) : string(title)
-  })
+  const specs = columns.map((column, i) =>
+    typeof column === 'object' ? column : guessColumnType(probe && probe[i], column),
+  )
   return options.header ? specs.map((spec, i) => ({ ...spec, title: `${data[0][i]}` })) : specs
 }
+
+const guessColumnType = (cell: unknown, title = ''): ColumnSpec =>
+  typeof cell === 'number' ? number(title) : string(title)
 
 const getFormattedData = (data: unknown[][], columns: ColumnSpec[]): string[][] =>
   data.map((row) => columns.map(({ format }, i) => format(row[i]))) // make use of sparse arrays for implicit filtering
